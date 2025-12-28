@@ -1,0 +1,76 @@
+FUNCTION_BLOCK social_feed
+
+VAR_INPUT
+    lajkovi : REAL;
+    dislajkovi : REAL;
+    komentari : REAL;
+END_VAR
+
+VAR_OUTPUT
+    feed : REAL;
+END_VAR
+
+// malo, srednje, puno
+FUZZIFY lajkovi
+    TERM malo_lajkova := trape 0 0 10 15;
+    TERM srednje_lajkova := trape 10 15 25 30;
+    TERM puno_lajkova := trape 25 30 50 50;
+END_FUZZIFY
+
+FUZZIFY dislajkovi
+    TERM malo_dislajkova := trape 0 0 10 15;
+    TERM srednje_dislajkova := trape 10 15 25 30;
+    TERM puno_dislajkova := trape 25 30 50 50;
+END_FUZZIFY
+
+FUZZIFY komentari
+    TERM malo_komentara := trape 0 0 10 15;
+    TERM srednje_komentara := trape 10 15 25 30;
+    TERM puno_komentara := trape 25 30 50 50;
+END_FUZZIFY
+
+DEFUZZIFY feed
+    TERM feed_end := (0, 1) (15, 1) (25, 0);
+    TERM feed_median := gbell 25 5 50;
+    TERM feed_top := (75, 0) (85, 1) (100, 1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK No1
+    AND : MIN;
+    ACT : MIN;
+    ACCU : MAX;
+
+    RULE 1 : IF lajkovi IS malo_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS malo_komentara THEN feed IS feed_end;
+    RULE 2 : IF lajkovi IS malo_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_median;
+    RULE 3 : IF lajkovi IS malo_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+    RULE 4 : IF lajkovi IS malo_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS malo_komentara THEN feed IS feed_median;
+    RULE 5 : IF lajkovi IS malo_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_median;
+    RULE 6 : IF lajkovi IS malo_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+    RULE 7 : IF lajkovi IS malo_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS malo_komentara THEN feed IS feed_top;
+    RULE 8 : IF lajkovi IS malo_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_top;
+    RULE 9 : IF lajkovi IS malo_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+
+    RULE 10 : IF lajkovi IS srednje_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS malo_komentara THEN feed IS feed_median;
+    RULE 11 : IF lajkovi IS srednje_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_median;
+    RULE 12 : IF lajkovi IS srednje_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+    RULE 13 : IF lajkovi IS srednje_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS malo_komentara THEN feed IS feed_median;
+    RULE 14 : IF lajkovi IS srednje_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_median;
+    RULE 15 : IF lajkovi IS srednje_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+    RULE 16 : IF lajkovi IS srednje_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS malo_komentara THEN feed IS feed_top;
+    RULE 17 : IF lajkovi IS srednje_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_top;
+    RULE 18 : IF lajkovi IS srednje_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+
+    RULE 19 : IF lajkovi IS puno_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS malo_komentara THEN feed IS feed_top;
+    RULE 20 : IF lajkovi IS puno_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_top;
+    RULE 21 : IF lajkovi IS puno_lajkova AND dislajkovi IS malo_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+    RULE 22 : IF lajkovi IS puno_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS malo_komentara THEN feed IS feed_top;
+    RULE 23 : IF lajkovi IS puno_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_top;
+    RULE 24 : IF lajkovi IS puno_lajkova AND dislajkovi IS srednje_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+    RULE 25 : IF lajkovi IS puno_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS malo_komentara THEN feed IS feed_top;
+    RULE 26 : IF lajkovi IS puno_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS srednje_komentara THEN feed IS feed_top;
+    RULE 27 : IF lajkovi IS puno_lajkova AND dislajkovi IS puno_dislajkova AND komentari IS puno_komentara THEN feed IS feed_top;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
